@@ -1,0 +1,67 @@
+<!doctype html>
+<html>
+<include src="include/header.html" />
+
+<body>
+
+    <nav class="navbar navbar-default navbar-fixed-top navbar-inverse" role="navigation">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+            <a class="navbar-brand" href="/index">
+                <span class="sp1"><b>书</b>
+                </span>
+                <span class="sp2">非</span>
+                <span class="sp3">借</span>
+                <span class="sp1">不</span>
+                <span class="sp2">能</span>
+                <span class="sp3">读</span>
+            </a>
+        </div>
+    </nav>
+    <div class="row reg_div">
+        <div class="row">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="/index">
+                    <span class="sp1">
+                        <strong>用</strong>
+                    </span>
+                    <span class="sp2">户</span>
+                    <span class="sp3">注</span>
+                    <span class="sp1">册</span>
+                </a>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-5">
+                ((if .tips))
+                <div class="alert alert-danger">((print .tips))</div>
+                ((end))
+                <form role="form" method="POST">
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" name="email" class="form-control" id="email" placeholder="电子邮件">
+                    </div>
+                    <div class="form-group">
+                        <label for="password">密码</label>
+                        <input type="password" name="password" class="form-control" id="password" placeholder="密码">
+                    </div>
+                    <div class="form-group input-group">
+                        <label for="exampleInputPassword1">较验码</label>
+                        <input type="password" name="verify" class="form-control" id="verify" placeholder="较验码">
+                        <img src="/verify" onclick="this.src=this.src">点击图片刷新
+                    </div>
+                    <button type="submit" class="btn btn-default">注册</button>
+                </form>
+            </div>
+            <div class="col-md-2"></div>
+            <div class="col-md-5">
+                > 已有帐号？去<a href="/login">登录</a>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+    </div>
+    <include src="include/footer.html" />
+</body>
+
+</html>
