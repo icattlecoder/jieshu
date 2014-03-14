@@ -1,12 +1,34 @@
 package controllers
 
 import (
+	"encoding/json"
+	"github.com/dchest/captcha"
 	"github.com/icattlecoder/jieshu/www/models"
 	"github.com/icattlecoder/tgw"
 	"labix.org/v2/mgo"
+	"log"
+	"os"
 )
 
-import "github.com/dchest/captcha"
+type Config struct {
+	Port         string
+	DoubanApiKey string
+	DoubanSecret string
+}
+
+func loadConfig(path string) Config {
+	r, err := os.Open(path)
+	if err != nil {
+		log.Fatal("load Config", path, err)
+	}
+	decoder := json.NewDecoder(r)
+	conf := Config{}
+	err = decoder.Decode(&conf)
+	if err != nil {
+		log.Fatal("load Config", path, err)
+	}
+	return conf
+}
 
 type Server struct {
 	coll *mgo.Collection

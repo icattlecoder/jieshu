@@ -21,7 +21,7 @@
         <!-- Brand and toggle get grouped for better mobile display -->
         <div class="navbar-header">
             <a class="navbar-brand" href="/index">
-            <img src="/static/img/logo.png" width="16px",height="16px">
+                <img src="/static/img/logo.png" width="16px" ,height="16px">
                 <span class="sp1"><b>书</b>
                 </span>
                 <span class="sp2">非</span>
@@ -43,9 +43,11 @@
             <form class="navbar-form navbar-right" role="search" method="POST" action="/logout">
                 ((if .user)) ((.user.Email))
                 <input type="submit" class="btn btn-link" value="退出">((else))
+
                 <div class="form-group">
-                    <a class="btn" href="/login">登录</a>
-                    <a class="btn" href="/register">注册</a>
+                    <a href="/douban/login">
+                        <img src="http://img3.douban.com/pics/douban-icons/login_with_douban_32.png" alt="32图标" title="32图标">
+                    </a>
                 </div>
                 ((end))
             </form>

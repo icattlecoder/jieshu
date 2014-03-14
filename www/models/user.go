@@ -9,6 +9,7 @@ import (
 	"labix.org/v2/mgo/bson"
 	"log"
 	"reflect"
+	"strconv"
 )
 
 var (
@@ -19,8 +20,11 @@ type UserInfo struct {
 	Uid      int64
 	Password string
 	Email    string
-	In []string
-	out	 []string
+	Name     string
+	In       []string
+	Out      []string
+	Location string
+	Avatar   string
 }
 
 type UserMgr struct {
@@ -37,10 +41,63 @@ func crypto(password string) string {
 	return base64.URLEncoding.EncodeToString(hasher.Sum(nil))
 }
 
-func (u *UserMgr) InOut(user UserInfo,book_id string,typ string) error {
-	log.Println(".................................")
-	log.Println(user.Email,book_id,typ)
-	return u.coll.Update(bson.M{"email":user.Email},bson.M{"$push":bson.M{typ:book_id}})
+func (u *UserMgr) InOut(user UserInfo, book_id string, typ string) error {
+	// log.Println(user.Email, book_id, typ)
+
+	return u.coll.Update(bson.M{"email": user.Email}, bson.M{"$push": bson.M{typ: book_id}})
+}
+
+/*
+	{
+		"loc_id":"108296",
+		"name":"iwangming",
+		"created":"2014-03-14 13:58:53",
+		"is_banned":false,
+		"is_suicide":false,
+		"loc_name":"上海",
+		"avatar":"http:\/\/img3.douban.com\/icon\/user_normal.jpg",
+		"signature":"",
+		"uid":"84779859",
+		"alt":"http:\/\/www.douban.com\/people\/84779859\/",
+		"desc":"","type":"user","id":"84779859",
+		"large_avatar":"http:\/\/img3.douban.com\/icon\/user_large.jpg"
+	}
+*/
+func (u *UserMgr) AddDouBan(data map[string]string) (user UserInfo, err error) {
+
+	if name, ok := data["name"]; ok {
+		user.Name = name
+	}
+
+	if uid, ok := data["uid"]; ok {
+		iuid, err2 := strconv.Atoi(uid)
+		if err2 != nil {
+			err = err2
+			return
+		}
+		user.Uid = int64(iuid)
+	}
+
+	if avatar, ok := data["avatar"]; ok {
+		user.Avatar = avatar
+	}
+
+	if loc_name, ok := data["loc_name"]; ok {
+		user.Location = loc_name
+	}
+	err = u.Add(user)
+	return
+}
+
+func (u *UserMgr) UpdateEmail(uid int64, email string) (err error) {
+	n, err := u.coll.Find(bson.M{"uid": uid}).Count()
+	if err != nil {
+		return err
+	}
+	if n <= 0 {
+		err = errors.New("尚未注册")
+	}
+	return u.coll.Update(bson.M{"uid": uid}, bson.M{"$set": bson.M{"email": email}})
 }
 
 func (u *UserMgr) Add(user UserInfo) (err error) {
@@ -81,14 +138,11 @@ func (u *UserMgr) Parse(env *tgw.ReqEnv, typ reflect.Type) (val reflect.Value, p
 	parsed = true
 	user := UserInfo{}
 	err := env.Session.Get(session_userid, &user)
+
 	if err != nil {
 		val = reflect.ValueOf((*UserInfo)(nil))
 		return
 	}
 	val = reflect.ValueOf(&user)
-
-	log.Println("++++++++", user)
-
-	// val = reflect.ValueOf(&v)
 	return
 }

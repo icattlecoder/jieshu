@@ -24,7 +24,7 @@ func (s *Server) IoDo(args IoArgs, env tgw.ReqEnv) (data map[string]interface{},
 		return
 	}
 	if args.Io != "in" && args.Io != "out" {
-		log.Println("IO:=", args.Io)
+		// log.Println("IO:=", args.Io)
 		data["success"] = false
 		return
 	}

@@ -13,110 +13,37 @@ import (
 	"net/http"
 )
 
-func (s *Server) Register(args AddUserArgs, env tgw.ReqEnv) (data map[string]interface{}, err error) {
+func (s *Server) DoubanLogin(env tgw.ReqEnv) (data map[string]interface{}, err error) {
+	http.Redirect(env.RW, env.Req, "https://www.douban.com/service/auth2/auth?client_id=05fe71c588b205e811fb55509a1611b8&redirect_uri=http://www.4jieshu.com/douban/callback&response_type=code", 302)
+	return
+}
+
+type UserCompleteArgs struct {
+	Email string
+}
+
+//UserComplete
+func (s *Server) Usercomplete(args UserCompleteArgs, env tgw.ReqEnv) (data map[string]interface{}, err error) {
 	if env.Req.Method == "GET" {
 		return
 	}
 	data = map[string]interface{}{}
-
-	if args.Verify == 0 {
-		data["tips"] = "校验码不正确"
+	userInfo := models.UserInfo{}
+	err = env.Session.Get("userInfo", &userInfo)
+	log.Println(userInfo)
+	if userInfo.Uid == 0 {
+		data["tips"] = "DouBan未授权"
 		return
 	}
-	i := 0
-	err = env.Session.Get("verify", &i)
-	if err != nil {
-		data["tips"] = err.Error()
-		return
-	}
-
 	if args.Email == "" {
-		data["tips"] = "Email不能为空!"
+		data["tips"] = "Email不能为空"
 		return
 	}
-
-	if args.Password == "" {
-		data["tips"] = "密码不能为空!"
-		return
-	}
-
-	userInfo := models.UserInfo{Password: args.Password, Email: args.Email}
-	err = s.UserMgr.Add(userInfo)
+	err = s.UserMgr.UpdateEmail(userInfo.Uid, args.Email)
 	if err != nil {
 		data["tips"] = err.Error()
 		return
 	}
-	if err = s.login(args.Email, args.Password, &env); err == nil {
-		http.Redirect(env.RW, env.Req, "http://"+env.Req.Host+"/index", 301)
-		return
-	}
-	data["tips"] = err.Error()
-	return
-}
-
-type AddUserArgs struct {
-	Password string
-	Email    string
-	Verify   int
-}
-
-func (s *Server) login(username, password string, env *tgw.ReqEnv) (err error) {
-	err = s.UserMgr.Valid(username, password)
-	if err != nil {
-		return
-	}
-
-	val := models.UserInfo{Email: username}
-
-	err = env.Session.Set("userInfo", val)
-	return
-}
-
-type UserLoginArgs struct {
-	Password string
-	Email    string
-	Verify   int
-}
-
-func (s *Server) Login(args UserLoginArgs, env tgw.ReqEnv) (data map[string]interface{}, err error) {
-	if env.Req.Method == "GET" {
-		return
-	}
-	data = map[string]interface{}{}
-	if args.Email == "" || args.Password == "" {
-		data["tips"] = "Email或密码不能为空"
-		return
-	}
-
-	err = s.UserMgr.Valid(args.Email, args.Password)
-	if err != nil {
-		data["tips"] = err.Error()
-		return
-	}
-	val := models.UserInfo{Email: args.Email}
-	err = env.Session.Set("userInfo", val)
-	if err != nil {
-		data["tips"] = err.Error()
-		return
-	}
-
-	query := env.Req.URL.Query()
-
-	if returnUrl := query.Get("returnUrl"); returnUrl != "" {
-		if b := query.Get("b"); b != "" {
-			http.Redirect(env.RW, env.Req, "http://"+env.Req.Host+returnUrl+"?b="+b, 301)
-			return
-		}
-	}
-
-	http.Redirect(env.RW, env.Req, "http://"+env.Req.Host+"/index", 301)
-	return
-
-	// env.RW.Write([]byte(err.Error()))
-}
-
-func (s *Server) Logout(env tgw.ReqEnv) (data map[string]interface{}, err error) {
-	env.Session.Clear("userInfo")
 	http.Redirect(env.RW, env.Req, "http://"+env.Req.Host+"/index", 302)
 	return
 }
@@ -133,10 +60,22 @@ func (s *Server) DoubanCallback(args DoubanCallbackArgs, env tgw.ReqEnv) {
 		log.Println(err)
 		return
 	}
-	log.Println(data)
 	if token, ok := data["access_token"]; ok {
 		if strToken, ok := token.(string); ok {
-			getDoubanUserInfo(strToken)
+			usrData := getDoubanUserInfo(strToken)
+			user, err := s.UserMgr.AddDouBan(usrData)
+			if err != nil {
+				log.Println(err)
+			}
+			err = env.Session.Set("userInfo", user)
+			if err != nil {
+				log.Println(err)
+			}
+			log.Println(user)
+			if user.Email == "" {
+				http.Redirect(env.RW, env.Req, "http://"+env.Req.Host+"/usercomplete", 302)
+				return
+			}
 		}
 	}
 	http.Redirect(env.RW, env.Req, "http://"+env.Req.Host+"/index", 302)
@@ -146,7 +85,7 @@ func getAccessToken(code string) (token string) {
 	resp, err := http.PostForm("https://www.douban.com/service/auth2/token",
 		url.Values{"client_id": {"05fe71c588b205e811fb55509a1611b8"},
 			"client_secret": {"44fc1984a367a30b"},
-			"redirect_uri":  {"http://requestb.in/xk1idzxk"},
+			"redirect_uri":  {"http://www.4jieshu.com/douban/callback"},
 			"grant_type":    {"authorization_code"},
 			"code":          {code},
 		})
@@ -164,7 +103,8 @@ func getAccessToken(code string) (token string) {
 	return
 }
 
-func getDoubanUserInfo(accessToken string) {
+func getDoubanUserInfo(accessToken string) (data map[string]string) {
+	data = map[string]string{}
 	req, err := http.NewRequest("GET", "https://api.douban.com/v2/user/~me", nil)
 	if err != nil {
 		log.Println(err)
@@ -184,22 +124,6 @@ func getDoubanUserInfo(accessToken string) {
 		log.Println(err)
 		return
 	}
-	/*
-		{
-			"loc_id":"108296",
-			"name":"iwangming",
-			"created":"2014-03-14 13:58:53",
-			"is_banned":false,
-			"is_suicide":false,
-			"loc_name":"上海",
-			"avatar":"http:\/\/img3.douban.com\/icon\/user_normal.jpg",
-			"signature":"",
-			"uid":"84779859",
-			"alt":"http:\/\/www.douban.com\/people\/84779859\/",
-			"desc":"","type":"user","id":"84779859",
-			"large_avatar":"http:\/\/img3.douban.com\/icon\/user_large.jpg"
-		}
-	*/
-	log.Println("userInfo:", string(content))
+	json.Unmarshal(content, &data)
 	return
 }
