@@ -70,6 +70,7 @@ func (s *Server) DoubanCallback(args DoubanCallbackArgs, env tgw.ReqEnv) {
 	if token, ok := data["access_token"]; ok {
 		if strToken, ok := token.(string); ok {
 			usrData := getDoubanUserInfo(strToken)
+
 			user, err := s.UserMgr.AddDouBan(usrData)
 			if err != nil {
 				log.Println(err)
@@ -78,7 +79,6 @@ func (s *Server) DoubanCallback(args DoubanCallbackArgs, env tgw.ReqEnv) {
 			if err != nil {
 				log.Println(err)
 			}
-			log.Println(user)
 			if user.Email == "" {
 				http.Redirect(env.RW, env.Req, "http://"+env.Req.Host+"/usercomplete", 302)
 				return

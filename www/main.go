@@ -18,6 +18,15 @@ func main() {
 	c := session.DB("jieshu")
 	coll := c.C("book")
 	coll_user := c.C("user")
+	index := mgo.Index{
+		Key:        []string{"uid"},
+		Unique:     true,
+		DropDups:   true,
+		Background: true, // See notes.
+		Sparse:     true,
+	}
+	coll_user.EnsureIndex(index)
+
 	ser := controllers.NewServer(coll, coll_user)
 
 	_tgw := tgw.NewTGW()

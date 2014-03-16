@@ -85,6 +85,11 @@ func (u *UserMgr) AddDouBan(data map[string]string) (user UserInfo, err error) {
 			return
 		}
 		user.Uid = int64(iuid)
+		if user2, ok := u.Users[user.Uid]; ok {
+			user = user2
+			err = errors.New("User Exsit")
+			return
+		}
 	}
 
 	if avatar, ok := data["avatar"]; ok {
