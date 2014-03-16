@@ -1,5 +1,7 @@
-var jieshuApp = angular.module('jieshuApp', []);
+var jieshuApp = angular.module('jieshuApp', ['ui.bootstrap']);
 
+var TabsDemoCtrl = function ($scope) {
+};
 
 jieshuApp.controller('ioCtl', function($scope, $http) {
     var start = 0;

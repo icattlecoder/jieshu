@@ -57,7 +57,7 @@ body {
     right: 0;
     left:0;
     top: 52px;
-    z-index: 1030;
+    z-index: 550;
 }
 .hr {
     border-right: 1px solid #2f2f2f;
@@ -70,4 +70,15 @@ footer {
     color: #777;
     text-align: center;
     border-top: 1px solid #e5e5e5;
+}
+.form-group{
+    margin-right: 10px;
+}
+.div_smy{
+    line-height: 28px;
+    padding:30px 10px;
+}
+
+.li_search{
+    margin-left: 50px;
 }

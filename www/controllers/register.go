@@ -13,6 +13,11 @@ import (
 	"net/http"
 )
 
+func (s *Server) Logout(env tgw.ReqEnv) {
+	env.Session.Clear("userInfo")
+	http.Redirect(env.RW, env.Req, "http://"+env.Req.Host, 302)
+}
+
 func (s *Server) DoubanLogin(env tgw.ReqEnv) (data map[string]interface{}, err error) {
 	http.Redirect(env.RW, env.Req, "https://www.douban.com/service/auth2/auth?client_id=05fe71c588b205e811fb55509a1611b8&redirect_uri=http://www.4jieshu.com/douban/callback&response_type=code", 302)
 	return
@@ -32,11 +37,11 @@ func (s *Server) Usercomplete(args UserCompleteArgs, env tgw.ReqEnv) (data map[s
 	err = env.Session.Get("userInfo", &userInfo)
 	log.Println(userInfo)
 	if userInfo.Uid == 0 {
-		data["tips"] = "DouBan未授权"
+		data["tips"] = `DouBan未授权!去<a href="/douban/login">授权</a>`
 		return
 	}
 	if args.Email == "" {
-		data["tips"] = "Email不能为空"
+		data["tips"] = "Email不能为空!"
 		return
 	}
 	err = s.UserMgr.UpdateEmail(userInfo.Uid, args.Email)
@@ -44,6 +49,8 @@ func (s *Server) Usercomplete(args UserCompleteArgs, env tgw.ReqEnv) (data map[s
 		data["tips"] = err.Error()
 		return
 	}
+	userInfo.Email = args.Email
+	env.Session.Set("userInfo", userInfo)
 	http.Redirect(env.RW, env.Req, "http://"+env.Req.Host+"/index", 302)
 	return
 }
@@ -125,5 +132,15 @@ func getDoubanUserInfo(accessToken string) (data map[string]string) {
 		return
 	}
 	json.Unmarshal(content, &data)
+	return
+}
+
+func (s *Server) User(args UserImgArgs) (data map[string]interface{}) {
+	data = map[string]interface{}{}
+	user, err := s.UserMgr.Get(int64(args.Uid))
+	if err != nil {
+		log.Println(err)
+	}
+	data["user"] = user
 	return
 }

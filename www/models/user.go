@@ -1,13 +1,10 @@
 package models
 
 import (
-	"crypto/sha1"
-	"encoding/base64"
 	"errors"
 	"github.com/icattlecoder/tgw"
 	"labix.org/v2/mgo"
 	"labix.org/v2/mgo/bson"
-	"log"
 	"reflect"
 	"strconv"
 )
@@ -28,22 +25,34 @@ type UserInfo struct {
 }
 
 type UserMgr struct {
-	coll *mgo.Collection
+	coll  *mgo.Collection
+	Users map[int64]UserInfo
 }
 
 func NewUserMgr(coll *mgo.Collection) *UserMgr {
-	return &UserMgr{coll: coll}
+
+	cache := map[int64]UserInfo{}
+	iter := coll.Find(nil).Iter()
+	for {
+		user := UserInfo{}
+		if iter.Next(&user) {
+			cache[user.Uid] = user
+		} else {
+			break
+		}
+	}
+	return &UserMgr{coll: coll, Users: cache}
 }
 
-func crypto(password string) string {
-	hasher := sha1.New()
-	hasher.Write([]byte(password))
-	return base64.URLEncoding.EncodeToString(hasher.Sum(nil))
-}
-
-func (u *UserMgr) InOut(user UserInfo, book_id string, typ string) error {
-	// log.Println(user.Email, book_id, typ)
-
+func (u *UserMgr) InOut(user UserInfo, book_id string, typ string) (err error) {
+	n, err := u.coll.Find(bson.M{"uid": user.Uid, typ: book_id}).Count()
+	if err != nil {
+		return
+	}
+	if n > 0 {
+		err = errors.New("Invalid op")
+		return
+	}
 	return u.coll.Update(bson.M{"email": user.Email}, bson.M{"$push": bson.M{typ: book_id}})
 }
 
@@ -97,11 +106,19 @@ func (u *UserMgr) UpdateEmail(uid int64, email string) (err error) {
 	if n <= 0 {
 		err = errors.New("尚未注册")
 	}
-	return u.coll.Update(bson.M{"uid": uid}, bson.M{"$set": bson.M{"email": email}})
+	err = u.coll.Update(bson.M{"uid": uid}, bson.M{"$set": bson.M{"email": email}})
+	//更新缓存
+	if err == nil {
+		if user, ok := u.Users[uid]; ok {
+			user.Email = email
+			u.Users[uid] = user
+		}
+	}
+	return
 }
 
 func (u *UserMgr) Add(user UserInfo) (err error) {
-	n, err := u.coll.Find(bson.M{"email": user.Email}).Count()
+	n, err := u.coll.Find(bson.M{"uid": user.Uid}).Count()
 	if err != nil {
 		return err
 	}
@@ -109,24 +126,21 @@ func (u *UserMgr) Add(user UserInfo) (err error) {
 		err = errors.New("Email :" + user.Email + " 已被注册!")
 		return
 	}
-	crypedPasswd := crypto(user.Password)
-	user.Password = crypedPasswd
 	err = u.coll.Insert(user)
+	if err == nil {
+		u.Users[user.Uid] = user
+	}
 	return
 }
 
-func (u *UserMgr) Valid(email, password string) (err error) {
-
-	user := UserInfo{}
-	err = u.coll.Find(bson.M{"email": email}).One(&user)
-	if err != nil || user.Email == "" {
-		log.Println(err)
-		err = errors.New(email + " 不存在!")
-		return
+func (u *UserMgr) Get(uid int64) (user UserInfo, err error) {
+	user, ok := u.Users[uid]
+	if !ok {
+		err = errors.New("User Not Exsit!")
 	}
-	if user.Password != crypto(password) {
-		err = errors.New("密码不正确!")
-	}
+	//以下是数据库操作:
+	// query := u.coll.Find(bson.M{"uid": uid})
+	// err = query.One(&user)
 	return
 }
 
@@ -138,7 +152,6 @@ func (u *UserMgr) Parse(env *tgw.ReqEnv, typ reflect.Type) (val reflect.Value, p
 	parsed = true
 	user := UserInfo{}
 	err := env.Session.Get(session_userid, &user)
-
 	if err != nil {
 		val = reflect.ValueOf((*UserInfo)(nil))
 		return

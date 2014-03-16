@@ -45,6 +45,6 @@ type Book struct {
 	Pages        string
 	Author_intro string
 	Summary      string
-	In           []string
-	Out          []string
+	In           []int64
+	Out          []int64
 }

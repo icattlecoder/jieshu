@@ -4,17 +4,67 @@
 <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
-    <title>书非借不能读|借书网</title>
+    <title>私人借书网|((.book.Title))</title>
     <meta name="keywords" content="私人借书，读书交流，读书交友" />
     <link rel="stylesheet" href="/static/css/bootstrap.min.css" />
     <link rel="stylesheet" href="/static/css/main.css" />
-    <!-- // <script type="text/javascript" src="http://cdn.staticfile.org/jquery/2.0.3/jquery.min.js"></script> -->
-    <script type="text/javascript" src="/static/js/jquery-2.0.3.min.js"></script>
+    <script type="text/javascript" src="http://cdn.staticfile.org/jquery/2.0.3/jquery.min.js"></script>
     <script src="http://cdn.bootcss.com/twitter-bootstrap/3.0.3/js/bootstrap.min.js"></script>
 </head>
 
 <body ng-controller="ioCtl">
-    <include src="include/nav.html" />
+    <nav class="navbar navbar-default navbar-fixed-top navbar-inverse" role="navigation">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+            <a class="navbar-brand" href="/index">
+                <span class="sp3"><b>私</b>
+                </span>
+                <span class="sp2">人</span>
+                <span class="sp3">借</span>
+                <span class="sp1">书</span>
+            </a>
+        </div>
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-6">
+            <ul class="nav navbar-nav">
+                ((range .catalog))
+                <li> <a href="/catalog?c=((.))">((.)) </a> 
+                </li>
+                ((end))
+            </ul>
+
+            <ul class="nav navbar-nav navbar-right navbar-form">
+                ((if .user))
+                <div class="btn-group">
+                    <button type="button" class="btn-link dropdown-toggle" data-toggle="dropdown" ng-controller="DropdownCtrl">
+                        <img src="((.user.Avatar))" width="32px" height="32px">
+                        <span class="caret"></span>
+                    </button>
+                    <ul class="dropdown-menu">
+                        <li><a href="#">((.user.Name))</a>
+                        </li>
+                        <li><a href="#">退出</a>
+                        </li>
+                    </ul>
+                </div>
+                ((else))
+                <div class="form-group">
+                    <a href="/douban/login">
+                        <img src="http://img3.douban.com/pics/douban-icons/login_with_douban_32.png">
+                    </a>
+                </div>
+                ((end))
+            </ul>
+
+        </div>
+    </nav>
+    <ol class="breadcrumb ">
+        <li><a href="/catalog?c=((.book.Catalog))">((.book.Catalog))</a>
+        </li>
+        <li> <a href="/catalog?c=((.book.Catalog))&t=((.book.Tag))"> ((.book.Tag)) </a> 
+        </li>
+        <li class="active">((.book.Title))</li>
+    </ol>
     <div id="content">
         <div class="row">
             <div class="col-md-7">
@@ -41,35 +91,37 @@
                     </div>
                 </div>
 
-                <div class="row">
+                <div class="row div_smy">
                     ((.book.Summary))
-                </div>
-                <div class="row">
-                    ((.catalog))
                 </div>
             </div>
             <div class="col-md-5">
+                <div class="alert alert-danger">
+                    为了防止恶意程序收集用户信息，Email以图片的形式提供，并添加了一定的噪声干扰。如果图片不清楚，请点击图片进行刷新。
+                </div>
                 <ul class="nav nav-tabs" id="tab_inout">
-                    <li><a href="#bookin" data-toggle="tab">愿借出</a>
+                    <li><a href="#bookin" data-toggle="tab">想借</a>
                     </li>
-                    <li class="active"><a href="#bookout" data-toggle="tab">想借</a>
+                    <li class="active"><a href="#bookout" data-toggle="tab">愿借出</a>
                     </li>
                 </ul>
                 <div class="tab-content">
                     <div class="tab-pane " id="bookin">
                         <ul class="list-group">
-                            ((range .book.In))
+                            ((range .inUsers))
                             <li class="list-group-item">
-                                ((.))
+                                ((.Location))
+                                <img src="/user/img?uid=((.Uid))" onclick="this.src=this.src">
                             </li>
                             ((end))
                         </ul>
                     </div>
                     <div class="tab-pane active" id="bookout">
                         <ol class="list-group">
-                            ((range .book.Out))
+                            ((range .outUsers))
                             <li class="list-group-item">
-                                ((.))
+                                ((.Location))
+                                <img src="/user/img?uid=((.Uid))" onclick="this.src=this.src">
                             </li>
                             ((end))
                         </ol>
@@ -84,6 +136,22 @@
         e.preventDefault()
         $(this).tab('show')
     })
+    </script>
+    <script>
+    (function(i, s, o, g, r, a, m) {
+        i['GoogleAnalyticsObject'] = r;
+        i[r] = i[r] || function() {
+            (i[r].q = i[r].q || []).push(arguments)
+        }, i[r].l = 1 * new Date();
+        a = s.createElement(o),
+        m = s.getElementsByTagName(o)[0];
+        a.async = 1;
+        a.src = g;
+        m.parentNode.insertBefore(a, m)
+    })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
+
+    ga('create', 'UA-49020474-1', '4jieshu.com');
+    ga('send', 'pageview');
     </script>
 </body>
 

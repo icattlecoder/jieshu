@@ -5,8 +5,10 @@ import (
 	"github.com/dchest/captcha"
 	"github.com/icattlecoder/jieshu/www/models"
 	"github.com/icattlecoder/tgw"
+	"io"
 	"labix.org/v2/mgo"
 	"log"
+	"net/http"
 	"os"
 )
 
@@ -65,3 +67,27 @@ func (s *Server) Verify(env tgw.ReqEnv) {
 		return
 	}
 }
+
+type UserImgArgs struct {
+	Uid int
+}
+
+func (s *Server) UserImg(args UserImgArgs, env tgw.ReqEnv) {
+	//TODO 性能优化，生成静态图片
+	if args.Uid == 0 {
+		return
+	}
+	user, err := s.UserMgr.Get(int64(args.Uid))
+	if err != nil {
+		return
+	}
+	resp, err := http.Get("http://127.0.0.1:8001/getimage?key=" + user.Email)
+	if err != nil {
+		log.Println(err)
+	}
+	defer resp.Body.Close()
+	io.Copy(env.RW, resp.Body)
+}
+
+func (s *Server) About()  {}
+func (s *Server) Advise() {}

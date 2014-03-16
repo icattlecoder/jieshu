@@ -21,13 +21,13 @@ func (s *Server) Index(args IndexArgs, user *models.UserInfo) (data map[string]i
 	}
 	data["catalog"] = s.data["catalog"]
 
-	query := s.coll.Find(nil)
-	books := make([]models.Book, 100)
-	err = query.Limit(100).All(&books)
-	if err != nil {
-		return
-	}
-	data["books"] = books
+	// query := s.coll.Find(nil)
+	// books := make([]models.Book, 100)
+	// err = query.Limit(100).All(&books)
+	// if err != nil {
+	// 	return
+	// }
+	// data["books"] = books
 
 	return
 }
