@@ -76,8 +76,11 @@ func (s *Server) IoDo(args IoArgs, env tgw.ReqEnv) (data map[string]interface{},
 
 }
 
-func (s *Server) Io(args InArgs) (data map[string]interface{}, err error) {
+func (s *Server) Io(args InArgs, user *models.UserInfo) (data map[string]interface{}, err error) {
 	data = map[string]interface{}{}
+	if user != nil {
+		data["user"] = user
+	}
 	data["catalog"] = s.data["catalog"]
 	book := models.Book{}
 	err = s.coll.Find(models.D{"id": args.B}).One(&book)
