@@ -5,7 +5,7 @@ import (
 	"net/url"
 )
 
-const (
+var (
 	EmailServerHost = "http://127.0.0.1:8090"
 )
 
