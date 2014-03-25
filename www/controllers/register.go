@@ -19,7 +19,7 @@ func (s *Server) Logout(env tgw.ReqEnv) {
 }
 
 func (s *Server) DoubanLogin(env tgw.ReqEnv) (data map[string]interface{}, err error) {
-	http.Redirect(env.RW, env.Req, "https://www.douban.com/service/auth2/auth?client_id=05fe71c588b205e811fb55509a1611b8&redirect_uri=http://www.4jieshu.com/douban/callback&response_type=code", 302)
+	http.Redirect(env.RW, env.Req, "https://www.douban.com/service/auth2/auth?client_id="+s.Config.DoubanApiKey+ "&redirect_uri=http://www.4jieshu.com/douban/callback&response_type=code", 302)
 	return
 }
 
@@ -60,7 +60,7 @@ type DoubanCallbackArgs struct {
 }
 
 func (s *Server) DoubanCallback(args DoubanCallbackArgs, env tgw.ReqEnv) {
-	access := getAccessToken(args.Code)
+	access := s.getAccessToken(args.Code)
 	data := map[string]interface{}{}
 	err := json.Unmarshal([]byte(access), &data)
 	if err != nil {
@@ -70,7 +70,7 @@ func (s *Server) DoubanCallback(args DoubanCallbackArgs, env tgw.ReqEnv) {
 	if token, ok := data["access_token"]; ok {
 		if strToken, ok := token.(string); ok {
 			usrData := getDoubanUserInfo(strToken)
-
+			//
 			user, err := s.UserMgr.AddDouBan(usrData)
 			if err != nil {
 				log.Println(err)
@@ -88,10 +88,10 @@ func (s *Server) DoubanCallback(args DoubanCallbackArgs, env tgw.ReqEnv) {
 	http.Redirect(env.RW, env.Req, "http://"+env.Req.Host+"/index", 302)
 }
 
-func getAccessToken(code string) (token string) {
+func (s *Server)getAccessToken(code string) (token string) {
 	resp, err := http.PostForm("https://www.douban.com/service/auth2/token",
-		url.Values{"client_id": {"05fe71c588b205e811fb55509a1611b8"},
-			"client_secret": {"44fc1984a367a30b"},
+		url.Values{"client_id": {s.Config.DoubanApiKey},
+			"client_secret": {s.Config.DoubanSecret},
 			"redirect_uri":  {"http://www.4jieshu.com/douban/callback"},
 			"grant_type":    {"authorization_code"},
 			"code":          {code},

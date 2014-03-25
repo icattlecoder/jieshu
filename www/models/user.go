@@ -2,6 +2,7 @@ package models
 
 import (
 	"errors"
+	"github.com/icattlecoder/jieshu/www/api"
 	"github.com/icattlecoder/tgw"
 	"labix.org/v2/mgo"
 	"labix.org/v2/mgo/bson"
@@ -74,10 +75,6 @@ func (u *UserMgr) InOut(user UserInfo, book_id string, typ string) (err error) {
 */
 func (u *UserMgr) AddDouBan(data map[string]string) (user UserInfo, err error) {
 
-	if name, ok := data["name"]; ok {
-		user.Name = name
-	}
-
 	if uid, ok := data["uid"]; ok {
 		iuid, err2 := strconv.Atoi(uid)
 		if err2 != nil {
@@ -90,6 +87,12 @@ func (u *UserMgr) AddDouBan(data map[string]string) (user UserInfo, err error) {
 			err = errors.New("User Exsit")
 			return
 		}
+	} else {
+		err = errors.New("Invalid DouBan Users")
+	}
+
+	if name, ok := data["name"]; ok {
+		user.Name = name
 	}
 
 	if avatar, ok := data["avatar"]; ok {
@@ -141,11 +144,13 @@ func (u *UserMgr) Add(user UserInfo) (err error) {
 func (u *UserMgr) Get(uid int64) (user UserInfo, err error) {
 	user, ok := u.Users[uid]
 	if !ok {
-		err = errors.New("User Not Exsit!")
+		// err = errors.New("User Not Exsit!")
+		//以下是数据库操作:
+		query := u.coll.Find(bson.M{"uid": uid})
+		err = query.One(&user)
 	}
-	//以下是数据库操作:
-	// query := u.coll.Find(bson.M{"uid": uid})
-	// err = query.One(&user)
+
+	go api.SendEmail("【私人借书网 | 用户注册】", strconv.Itoa(int(user.Uid)), "icattlecoder@gmail.com")
 	return
 }
 

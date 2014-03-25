@@ -1,0 +1,9 @@
+{
+    "port": "8080",
+    "douban_apikey": "0679176fbf9b2402136b464f3ed16c06",
+    "doubanSecret": "c6affec2ea615a27",
+    "mgo_host": "localhost",
+    "mc_host": ["127.0.0.1:11211"],
+    "img_service": "http://127.0.0.1:8001/getimage?key=",
+    "email_service":"http://127.0.0.1:8090"
+}

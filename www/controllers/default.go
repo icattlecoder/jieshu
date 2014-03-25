@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"encoding/json"
 	"github.com/dchest/captcha"
 	"github.com/icattlecoder/jieshu/www/models"
 	"github.com/icattlecoder/tgw"
@@ -9,41 +8,28 @@ import (
 	"labix.org/v2/mgo"
 	"log"
 	"net/http"
-	"os"
 )
 
 type Config struct {
-	Port         string
 	DoubanApiKey string
 	DoubanSecret string
+	ImageServer  string
 }
 
-func loadConfig(path string) Config {
-	r, err := os.Open(path)
-	if err != nil {
-		log.Fatal("load Config", path, err)
-	}
-	decoder := json.NewDecoder(r)
-	conf := Config{}
-	err = decoder.Decode(&conf)
-	if err != nil {
-		log.Fatal("load Config", path, err)
-	}
-	return conf
-}
 
 type Server struct {
+	Config *Config
 	coll *mgo.Collection
 	*models.UserMgr
 	data map[string]interface{}
 }
 
-func NewServer(c *mgo.Collection, user_coll *mgo.Collection) *Server {
-	userMgr := models.NewUserMgr(user_coll)
+func NewServer(c *mgo.Collection, user_coll *mgo.Collection, cfg *Config) *Server {
 
+	userMgr := models.NewUserMgr(user_coll)
 	data := map[string]interface{}{}
 	data["catalog"] = models.GetBookCatalog()
-	return &Server{coll: c, UserMgr: userMgr, data: data}
+	return &Server{coll: c, UserMgr: userMgr, data: data, Config: cfg}
 }
 
 type TestArgs struct {
@@ -81,7 +67,7 @@ func (s *Server) UserImg(args UserImgArgs, env tgw.ReqEnv) {
 	if err != nil {
 		return
 	}
-	resp, err := http.Get("http://127.0.0.1:8001/getimage?key=" + user.Email)
+	resp, err := http.Get(s.Config.ImageServer + user.Email)
 	if err != nil {
 		log.Println(err)
 	}
