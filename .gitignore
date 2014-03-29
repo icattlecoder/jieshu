@@ -18,5 +18,8 @@ _cgo_gotypes.go
 _cgo_export.*
 
 _testmain.go
-
+www
+emailService
+captchaService
+conf.json
 *.exe

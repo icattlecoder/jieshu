@@ -16,6 +16,7 @@ type IoArgs struct {
 	Io string
 }
 
+//想借愿借处理
 func (s *Server) IoDo(args IoArgs, env tgw.ReqEnv) (data map[string]interface{}, err error) {
 	data = map[string]interface{}{}
 
@@ -87,8 +88,10 @@ func (s *Server) Io(args InArgs, user *models.UserInfo) (data map[string]interfa
 	if err != nil {
 		return
 	}
+	/*
 	InUsers := []models.UserInfo{}
 	for _, v := range book.In {
+
 		InUsers = append(InUsers, s.UserMgr.Users[v])
 	}
 
@@ -96,10 +99,11 @@ func (s *Server) Io(args InArgs, user *models.UserInfo) (data map[string]interfa
 	for _, v := range book.Out {
 		OutUsers = append(OutUsers, s.UserMgr.Users[v])
 	}
+	*/
 
 	data["book"] = book
-	data["inUsers"] = InUsers
-	data["outUsers"] = OutUsers
+	data["inUsers"] = book.In
+	data["outUsers"] = book.Out
 	return
 }
 

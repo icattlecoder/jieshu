@@ -1,9 +1,11 @@
 package controllers
 
 import (
+	"github.com/icattlecoder/jieshu/www/api"
 	"github.com/dchest/captcha"
 	"github.com/icattlecoder/jieshu/www/models"
 	"github.com/icattlecoder/tgw"
+	"github.com/icattlecoder/mcClient"
 	"io"
 	"labix.org/v2/mgo"
 	"log"
@@ -14,6 +16,7 @@ type Config struct {
 	DoubanApiKey string
 	DoubanSecret string
 	ImageServer  string
+	MCHosts      []string
 }
 
 
@@ -22,14 +25,18 @@ type Server struct {
 	coll *mgo.Collection
 	*models.UserMgr
 	data map[string]interface{}
+	mc mcClient.MC
+	douban *api.DoubanClient
 }
 
 func NewServer(c *mgo.Collection, user_coll *mgo.Collection, cfg *Config) *Server {
 
-	userMgr := models.NewUserMgr(user_coll)
+	userMgr := models.NewUserMgr(user_coll,cfg.MCHosts)
 	data := map[string]interface{}{}
 	data["catalog"] = models.GetBookCatalog()
-	return &Server{coll: c, UserMgr: userMgr, data: data, Config: cfg}
+	mc := mcClient.NewGobMCClient("books",cfg.MCHosts...)
+	dban := api.NewDoubanClient(cfg.DoubanApiKey,cfg.DoubanSecret)
+	return &Server{coll: c, UserMgr: userMgr, data: data, Config: cfg, mc: mc,douban: dban}
 }
 
 type TestArgs struct {
@@ -70,6 +77,7 @@ func (s *Server) UserImg(args UserImgArgs, env tgw.ReqEnv) {
 	resp, err := http.Get(s.Config.ImageServer + user.Email)
 	if err != nil {
 		log.Println(err)
+		return
 	}
 	defer resp.Body.Close()
 	io.Copy(env.RW, resp.Body)

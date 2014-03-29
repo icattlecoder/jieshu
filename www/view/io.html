@@ -96,6 +96,14 @@
                 </div>
             </div>
             <div class="col-md-5">
+                <div class="shareSites">
+                    <div class="inner">
+                        <div>
+                        分享到
+                            <a title="分享到新浪微博" class="share_sina" data-value="sina" href="javascript:;">分享到新浪微博</a><a title="分享到豆瓣" class="share_douban" data-value="douban" href="javascript:;">分享到豆瓣</a>
+                        </div>
+                    </div>
+                </div>
                 <div class="alert alert-danger">
                     为了防止恶意程序收集用户信息，Email以图片的形式提供，并添加了一定的噪声干扰。如果图片不清楚，请点击图片进行刷新。
                 </div>
@@ -110,8 +118,9 @@
                         <ul class="list-group">
                             ((range .inUsers))
                             <li class="list-group-item">
-                                ((.Location))
-                                <img src="/user/img?uid=((.Uid))" onclick="this.src=this.src">
+                                <a href="/user?uid=((.))">
+                                    <img src="/user/img?uid=((.))">
+                                </a>
                             </li>
                             ((end))
                         </ul>
@@ -120,8 +129,9 @@
                         <ol class="list-group">
                             ((range .outUsers))
                             <li class="list-group-item">
-                                ((.Location))
-                                <img src="/user/img?uid=((.Uid))" onclick="this.src=this.src">
+                                <a href="/user?uid=((.))">
+                                    <img src="/user/img?uid=((.))">
+                                </a>
                             </li>
                             ((end))
                         </ol>

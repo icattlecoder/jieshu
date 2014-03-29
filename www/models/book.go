@@ -3,6 +3,7 @@ package models
 type D map[string]interface{}
 
 var (
+	//DouBan抓取
 	Tags = map[string][]string{
 		"文学": []string{"小说", "外国文学", "文学", "随笔", "中国文学", "经典", "散文", "日本文学", "村上春树", "童话", "诗歌", "王小波", "杂文", "张爱玲", "儿童文学", "余华", "古典文学", "名著", "钱钟书", "当代文学", "鲁迅", "外国名著", "诗词", "茨威格", "杜拉斯", "米兰·昆德拉", "港台"},
 		"流行": []string{"漫画", "绘本", "推理", "青春", "言情", "科幻", "韩寒", "武侠", "悬疑", "耽美", "亦舒", "东野圭吾", "日本漫画", "奇幻", "安妮宝贝", "三毛", "郭敬明", "网络小说", "穿越", "金庸", "几米", "轻小说", "推理小说", "阿加莎·克里斯蒂", "张小娴", "幾米", "魔幻", "青春文学", "高木直子", "J.K.罗琳", "沧月", "落落", "张悦然", "古龙", "科幻小说", "蔡康永"},
@@ -19,6 +20,8 @@ func GetBookCatalog() (catalog []string) {
 	}
 	return
 }
+
+var BookFields = []string{"catalog","id","title","author","translator","publisher","price","in","out","image"}
 
 type Book struct {
 	Catalog      string
@@ -47,4 +50,41 @@ type Book struct {
 	Summary      string
 	In           []int64
 	Out          []int64
+}
+
+//页面输出使用
+type SBook struct {
+	Catalog      string
+	Tag          string
+	Id           string
+	Title        string
+	Image        string
+	Author       []string
+	Translator   []string
+	Publisher    string
+	Tags         string
+	Price        string
+	In           int
+	Out          int
+}
+
+func ConvertToSBook(books []Book) []SBook {
+	sbooks := make([]SBook,len(books))
+	for k, v := range books {
+		sbooks[k] =  SBook {
+			Catalog:v.Catalog,
+			Tag:v.Tag,
+			Id:v.Id,
+			Title:v.Title,
+			Image:v.Image,
+			Author:v.Author,
+			Translator:v.Translator,
+			Publisher:v.Publisher,
+			Tags:v.Tags,
+			Price:v.Price,
+			In:len(v.In),
+			Out:len(v.Out),
+		}
+	}
+	return sbooks
 }

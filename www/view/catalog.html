@@ -48,7 +48,7 @@ var TAG = ((.currentTag));
                 ((if .user))
                 <div class="btn-group">
                     <button type="button" class="btn-link dropdown-toggle" data-toggle="dropdown" ng-controller="DropdownCtrl">
-                        <img src="((.user.Avatar))" width="32px" height="32px">
+                        <img class="avatar"  src="((.user.Avatar))" width="32px" height="32px">
                         <span class="caret"></span>
                     </button>
                     <ul class="dropdown-menu">
@@ -61,7 +61,7 @@ var TAG = ((.currentTag));
                 ((else))
                 <div class="form-group">
                     <a href="/douban/login">
-                        <img src="http://img3.douban.com/pics/douban-icons/login_with_douban_32.png" alt="32图标" title="32图标">
+                        <img class="avatar"  src="http://img3.douban.com/pics/douban-icons/login_with_douban_32.png" alt="32图标" title="32图标">
                     </a>
                 </div>
                 ((end))

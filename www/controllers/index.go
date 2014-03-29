@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"log"
 	"github.com/icattlecoder/jieshu/www/models"
 	"labix.org/v2/mgo"
 	"labix.org/v2/mgo/bson"
@@ -20,7 +21,6 @@ func (s *Server) Index(args IndexArgs, user *models.UserInfo) (data map[string]i
 		data["user"] = user
 	}
 	data["catalog"] = s.data["catalog"]
-
 	return
 }
 
@@ -91,13 +91,13 @@ func (s *Server) More(args MoreArgs) (data map[string]interface{}, err error) {
 	}
 
 	s.coll.Find(query)
-
 	books := make([]models.Book, 100)
-	err = query.Skip(args.Start * 100).Limit(100).All(&books)
+	err = query.Skip(args.Start * 100).Limit(100).Hint(models.BookFields...).All(&books)
+	sbooks := models.ConvertToSBook(books)
 	if err != nil {
 		return
 	}
-	data["books"] = books
+	data["books"] = sbooks
 	return
 }
 
@@ -119,9 +119,12 @@ func (s *Server) Search(args SearchArgs) (data map[string]interface{}, err error
 	}
 	books := make([]models.Book, 100)
 	err = query.Skip(args.Start * 100).Limit(100).All(&books)
+	sbooks := models.ConvertToSBook(books)
+	log.Println(sbooks)
+
 	if err != nil {
 		return
 	}
-	data["books"] = books
+	data["books"] = sbooks
 	return
 }

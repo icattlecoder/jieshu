@@ -76,6 +76,7 @@ func main() {
 		DoubanApiKey: cfg.DoubanApiKey,
 		DoubanSecret: cfg.DoubanSecret,
 		ImageServer: cfg.ImageServer,
+		MCHosts: cfg.MCHost,
 	}
 	api.EmailServerHost = cfg.EmailServer
 

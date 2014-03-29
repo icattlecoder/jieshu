@@ -62,23 +62,64 @@ body {
 .hr {
     border-right: 1px solid #2f2f2f;
 }
-
 footer {
-    padding-top: 20px;
-    padding-bottom: 20px;
+    padding-top: 10px;
+    padding-bottom: 10px;
     margin-top: 50px;
     color: #777;
     text-align: center;
     border-top: 1px solid #e5e5e5;
+    font-size: 18px;
 }
-.form-group{
+.form-group {
     margin-right: 10px;
 }
-.div_smy{
+.div_smy {
     line-height: 28px;
     padding:30px 10px;
 }
-
-.li_search{
+.li_search {
     margin-left: 50px;
+}
+.avatar {
+    border-radius: 32px;
+    -webkit-border-radius:32px;
+}
+.shareSites {
+    display: inline-block;
+    height: 38px;
+    overflow: hidden;
+}
+.shareSites a {
+    background: url(/static/img/playerImgs.png) no-repeat right -50px;
+    width: 21px;
+    height: 16px;
+    display: inline-block;
+    cursor: pointer;
+    margin-top: 12px;
+}
+.shareSites a {
+    width: 38px;
+    height: 38px;
+    line-height: 10em;
+    margin: 0 10px 0 0;
+    vertical-align: middle;
+}
+a.share_wx {
+    background-position:0 -410px
+}
+a.share_wx:hover {
+    background-position:0 -450px
+}
+a.share_sina {
+    background-position: -51px -16px
+}
+a.share_sina:hover {
+    background-position:-51px -56px
+}
+a.share_douban {
+    background-position:-101px -16px
+}
+a.share_douban:hover {
+    background-position:-101px -56px
 }
