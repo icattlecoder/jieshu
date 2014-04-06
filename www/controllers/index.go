@@ -4,8 +4,6 @@ import (
 	"github.com/icattlecoder/jieshu/www/models"
 	"labix.org/v2/mgo"
 	"labix.org/v2/mgo/bson"
-	"log"
-	// "log"
 )
 
 // =============================================

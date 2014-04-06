@@ -1,23 +1,23 @@
 package api
 
 import (
-	"qbox.us/encoding/json"
-	"io/ioutil"
-	"net/url"
-	"net/http"
+	"encoding/json"
 	"errors"
+	"io/ioutil"
+	"net/http"
+	"net/url"
 )
 
-type DoubanClient struct{
+type DoubanClient struct {
 	ApiKey string
 	Secret string
 }
 
-func NewDoubanClient(apiKey,secret string) *DoubanClient {
-	return &DoubanClient{ApiKey: apiKey, Secret: secret }
+func NewDoubanClient(apiKey, secret string) *DoubanClient {
+	return &DoubanClient{ApiKey: apiKey, Secret: secret}
 }
 
-func (s *DoubanClient)getAccessToken(code string) (token string,err error) {
+func (s *DoubanClient) getAccessToken(code string) (token string, err error) {
 	resp, err := http.PostForm("https://www.douban.com/service/auth2/token",
 		url.Values{"client_id": {s.ApiKey},
 			"client_secret": {s.Secret},
@@ -30,24 +30,23 @@ func (s *DoubanClient)getAccessToken(code string) (token string,err error) {
 	}
 	defer resp.Body.Close()
 
-
 	decoder := json.NewDecoder(resp.Body)
 
 	data2 := map[string]interface{}{}
-	if err = decoder.Decode(&data2);err == nil {
-		if objtoken,ok := data2["access_token"];ok{
-			token,_ = objtoken.(string)
+	if err = decoder.Decode(&data2); err == nil {
+		if objtoken, ok := data2["access_token"]; ok {
+			token, _ = objtoken.(string)
 			return
 		}
-		err =  errors.New("No access_token ")
+		err = errors.New("No access_token ")
 	}
 	return
 }
 
-func (s *DoubanClient)GetDoubanUserInfo(code string) (data map[string]string,err error) {
+func (s *DoubanClient) GetDoubanUserInfo(code string) (data map[string]string, err error) {
 
 	access, err := s.getAccessToken(code)
-	if err != nil{
+	if err != nil {
 		return
 	}
 	data = map[string]string{}
@@ -56,7 +55,7 @@ func (s *DoubanClient)GetDoubanUserInfo(code string) (data map[string]string,err
 		err = err2
 		return
 	}
-	req.Header.Add("Authorization", "Bearer " + access)
+	req.Header.Add("Authorization", "Bearer "+access)
 	client := &http.Client{}
 	resp, err2 := client.Do(req)
 	if err2 != nil {
