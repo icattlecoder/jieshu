@@ -2,6 +2,7 @@
 package controllers
 
 import (
+	"launchpad.net/mgo/bson"
 	"github.com/icattlecoder/jieshu/www/models"
 	"github.com/icattlecoder/tgw"
 	"log"
@@ -87,12 +88,57 @@ func (s *Server) DoubanCallback(args DoubanCallbackArgs, env tgw.ReqEnv) {
 	// env.RW.Write([]byte(err.Error()))
 }
 
-func (s *Server) User(args UserImgArgs) (data map[string]interface{}) {
+func (s *Server) User(args UserImgArgs,env tgw.ReqEnv) (data map[string]interface{}) {
+	user := models.UserInfo{}
+	if err := env.Session.Get("userInfo", &user);err != nil{
+		http.Redirect(env.RW, env.Req, "http://"+env.Req.Host+"/douban/login", 302)
+		return
+	}
 	data = map[string]interface{}{}
 	user, err := s.UserMgr.Get(int64(args.Uid))
 	if err != nil {
 		log.Println(err)
 	}
+
 	data["user"] = user
+
+	if len(user.In)>0{
+		result := make([]interface{},len(user.In))
+		s.coll.Find(bson.M{"id":bson.M{"$in":user.In}}).Select(bson.M{"image":1,"id":1}).All(&result)
+		log.Println(result)
+		data["in"] = result;
+	}
+
+	if len(user.Out) >0 {
+		result2 := make([]interface{},len(user.Out))
+		s.coll.Find(bson.M{"id":bson.M{"$in":user.Out}}).Select(bson.M{"image":1,"id":1}).All(&result2)
+		data["out"] = result2;
+	}
+	log.Println(data)
 	return
+}
+
+type UserEmailArgs struct{
+	Code int
+	Uid int
+}
+func (s *Server) UserEmail(args UserEmailArgs,env tgw.ReqEnv) (data map[string]interface{}) {
+	log.Println(args)
+	data = map[string]interface{}{}
+	data["success"] = false
+	verifyCode := 0
+	if err := env.Session.Get("verify", &verifyCode); err == nil {
+		if verifyCode != args.Code{
+			data["info"] = "较验码错误!"
+			return
+		}
+		if user,err:=s.UserMgr.Get(int64(args.Uid));err == nil{
+			data["email"] = user.Email
+			data["success"] = true
+			return
+		}
+	}
+	data["info"] = "Get User Email Error!"
+	return
+	
 }

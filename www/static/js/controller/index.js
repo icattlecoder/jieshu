@@ -68,7 +68,7 @@ jieshuApp.controller('indexCtl', function($scope, $http) {
             }
         }).success(function(data, status, headers, config) {
             if (data.success) {
-                thiz.book.In.push(data.email);
+                thiz.book.In += 1;
                 return;
             } else if (data.needLogin) {
                 window.location =data.directUrl;
@@ -90,7 +90,7 @@ jieshuApp.controller('indexCtl', function($scope, $http) {
             }
         }).success(function(data, status, headers, config) {
             if (data.success) {
-                thiz.book.Out.push(data.email);
+                thiz.book.Out += 1;
                 return;
             }else if (data.needLogin){
                 window.location =data.directUrl;

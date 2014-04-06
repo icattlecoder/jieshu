@@ -65,8 +65,8 @@ func (s *Server) CatalogSearch(args CatalogArgs, user *models.UserInfo) (data ma
 	if err != nil {
 		return
 	}
-	books := make([]models.Book, 100)
-	err = query.Skip(args.Start * 100).Limit(100).All(&books)
+	books := make([]models.Book, 50)
+	err = query.Skip(args.Start * 50).Limit(50).All(&books)
 	if err != nil {
 		return
 	}
@@ -91,8 +91,8 @@ func (s *Server) More(args MoreArgs) (data map[string]interface{}, err error) {
 	}
 
 	s.coll.Find(query)
-	books := make([]models.Book, 100)
-	err = query.Skip(args.Start * 100).Limit(100).Hint(models.BookFields...).All(&books)
+	books := make([]models.Book, 50)
+	err = query.Skip(args.Start * 50).Limit(50).Hint(models.BookFields...).All(&books)
 	sbooks := models.ConvertToSBook(books)
 	if err != nil {
 		return
@@ -117,8 +117,8 @@ func (s *Server) Search(args SearchArgs) (data map[string]interface{}, err error
 		cond := bson.M{"title": bson.M{"$regex": "^" + args.Keyword}}
 		query = s.coll.Find(cond)
 	}
-	books := make([]models.Book, 100)
-	err = query.Skip(args.Start * 100).Limit(100).All(&books)
+	books := make([]models.Book, 50)
+	err = query.Skip(args.Start * 50).Limit(50).All(&books)
 	sbooks := models.ConvertToSBook(books)
 	log.Println(sbooks)
 

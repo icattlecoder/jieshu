@@ -102,8 +102,19 @@ func (s *Server) Io(args InArgs, user *models.UserInfo) (data map[string]interfa
 	*/
 
 	data["book"] = book
-	data["inUsers"] = book.In
-	data["outUsers"] = book.Out
+	if len(book.In)>0 {
+		if result,err := s.UserMgr.GetInOut(book.In);err == nil {
+			data["inUsers"] = result
+			log.Println(result)
+		}
+	}
+	if len(book.Out) > 0 {
+		if result,err := s.UserMgr.GetInOut(book.Out);err == nil {
+			data["outUsers"] = result
+			log.Println(result)
+		}
+	}
+
 	return
 }
 

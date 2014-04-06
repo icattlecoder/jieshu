@@ -58,6 +58,13 @@ func (u *UserMgr) InOut(user UserInfo, book_id string, typ string) (err error) {
 	return u.coll.Update(bson.M{"email": user.Email}, bson.M{"$push": bson.M{typ: book_id}})
 }
 
+func (u *UserMgr) GetInOut(uids []int64) (result []interface{}, err error) {
+	result = make([]interface{},len(uids))
+	selector := bson.M{"avatar":1,"uid":1,"location":1,"name":1}
+	err = u.coll.Find(bson.M{"uid":bson.M{"$in":uids}}).Select(selector).All(&result)
+	return
+}
+
 /*
 	{
 		"loc_id":"108296",

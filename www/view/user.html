@@ -10,6 +10,11 @@
     <link rel="stylesheet" href="/static/css/main.css" />
     <script type="text/javascript" src="http://cdn.staticfile.org/jquery/2.0.3/jquery.min.js"></script>
     <script src="http://cdn.bootcss.com/twitter-bootstrap/3.0.3/js/bootstrap.min.js"></script>
+    <style type="text/css">
+    body{
+        padding-top: 50px;
+    }
+    </style>
 </head>
 
 <body ng-controller="ioCtl">
@@ -26,13 +31,6 @@
         </div>
         <!-- Collect the nav links, forms, and other content for toggling -->
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-6">
-            <ul class="nav navbar-nav">
-                ((range .catalog))
-                <li> <a href="/catalog?c=((.))">((.)) </a> 
-                </li>
-                ((end))
-            </ul>
-
             <ul class="nav navbar-nav navbar-right navbar-form">
                 ((if .user))
                 <div class="btn-group">
@@ -41,9 +39,9 @@
                         <span class="caret"></span>
                     </button>
                     <ul class="dropdown-menu">
-                        <li><a href="#">((.user.Name))</a>
+                        <li><a href="/user?uid=((.user.Uid))">((.user.Name))</a>
                         </li>
-                        <li><a href="#">退出</a>
+                        <li><a href="/logout">退出</a>
                         </li>
                     </ul>
                 </div>
@@ -55,17 +53,50 @@
                 </div>
                 ((end))
             </ul>
-
         </div>
     </nav>
 
     <div id="content">
-        <div class="row">
-            <img src="((.user.Avatar))">((.user.Name)) Email:((.user.Email))
-            <br/>位置:((.user.Location))
-            <br/>((.))
+        <div>
+            <h3 class="uh3">用户信息</h3>
+            <div class="row">
+                <div class="col-md-2 text-center">
+                    <img class="avatar" src="((.user.Avatar))">
+                </div>
+                <div class="col-md-10">
+                    
+                                            <p>用户：((.user.Name))</p>
+                        <p>位置：((.user.Location))</p>
+                        <p>Email：<span id="spemail">******</span>
+                        </p>
+                        <p>
+                            <img src="verify" onclick="this.src=this.src"><input type="text" id="txt_verify" placeholder="输入验证码查看Email" class="form-control" style="width:200px;float:left;"/>
+                            <button id="btn_verify" class="btn btn-default">确定</button>
+                        </p>
+                    </ul>
+                </div>
+            </div>
         </div>
-        <div></div>
+        <div>
+            <h3 class="uh3">愿借出的书</h3>
+            <p>
+                ((range .in))
+                <a class="usera" href="/io?b=((.id))">
+                    <img class="uimg" src="((.image))" width="70px" height="95px">
+                </a>
+                ((end))
+            </p>
+        </div>
+        <div>
+            <h3 class="uh3">想借的书</h3>
+            <p>
+                ((range .out))
+                <a class="usera" href="/io?b=((.id))">
+                    <img class="uimg" src="((.image))" width="70px" height="95px">
+                </a>
+                ((end))
+            </p>
+        </div>
     </div>
     <include src="include/footer.html" />
     <script type="text/javascript">
@@ -73,6 +104,23 @@
         e.preventDefault()
         $(this).tab('show')
     })
+    $('#btn_verify').click(function(e) {
+        /* Act on the event */
+        $.ajax({
+            url: '/user/email',
+            type: 'POST',
+            dataType: 'json',
+            data: {code:$("#txt_verify").val(),"uid":((.user.Uid))},
+        }).done(function(data) {
+            if(data.success){
+                $("#spemail").text(data.email);
+            }else{
+                alert(data.info);
+            }
+        }).fail(function() {
+        });
+        
+    });
     </script>
 </body>
 

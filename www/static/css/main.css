@@ -89,6 +89,7 @@ footer {
     display: inline-block;
     height: 38px;
     overflow: hidden;
+    margin-bottom: 20px;
 }
 .shareSites a {
     background: url(/static/img/playerImgs.png) no-repeat right -50px;
@@ -122,4 +123,23 @@ a.share_douban {
 }
 a.share_douban:hover {
     background-position:-101px -56px
+}
+.uimg {
+    margin: 20px;
+}
+.uh3 {
+    border-bottom: 1px solid #e5e5e5;
+    padding: 5px;
+}
+.right {
+    float:left;
+    width:100px;
+    text-align: center;
+}
+#bookin {
+    padding: 10px;
+}
+
+#bookout {
+    padding: 10px;
 }
