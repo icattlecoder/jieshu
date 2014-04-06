@@ -4,7 +4,7 @@ package controllers
 import (
 	"github.com/icattlecoder/jieshu/www/models"
 	"github.com/icattlecoder/tgw"
-	"launchpad.net/mgo/bson"
+	"labix.org/v2/mgo/bson"
 	"log"
 
 	// "log"
