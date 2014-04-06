@@ -68,7 +68,7 @@
     </nav>
 
 
-    <div class="col-md-3 bookItem" ng-repeat="book in books">
+    <div class="col-md-3 bookItem" ng-repeat="book in books" ng-cloak>
         <div class="row">
             <div class="col-md-4">
                 <a target="_blank" href="io?b={{book.Id}}">
@@ -101,7 +101,7 @@
     <div class="clearfix"></div>
 
     <div class="row center">
-        <button class="btn btn-lg btn-danger" ng-click="more()">
+        <button class="btn btn-lg btn-danger" ng-click="more()" ng-cloak>
             <span class="on">{{btn_text}}</span>
         </button>
     </div>
