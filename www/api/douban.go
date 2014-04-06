@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"net/url"
 )
@@ -43,13 +44,13 @@ func (s *DoubanClient) getAccessToken(code string) (token string, err error) {
 	return
 }
 
-func (s *DoubanClient) GetDoubanUserInfo(code string) (data map[string]string, err error) {
+func (s *DoubanClient) GetDoubanUserInfo(code string) (data map[string]interface{}, err error) {
 
 	access, err := s.getAccessToken(code)
 	if err != nil {
 		return
 	}
-	data = map[string]string{}
+	data = map[string]interface{}{}
 	req, err2 := http.NewRequest("GET", "https://api.douban.com/v2/user/~me", nil)
 	if err2 != nil {
 		err = err2
@@ -69,5 +70,8 @@ func (s *DoubanClient) GetDoubanUserInfo(code string) (data map[string]string, e
 		return
 	}
 	err = json.Unmarshal(content, &data)
+	if err != nil {
+		log.Println(string(content))
+	}
 	return
 }

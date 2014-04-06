@@ -1,10 +1,10 @@
 package models
 
 import (
-	"fmt"
-	"github.com/icattlecoder/mcClient"
 	"errors"
+	"fmt"
 	"github.com/icattlecoder/jieshu/www/api"
+	"github.com/icattlecoder/mcClient"
 	"github.com/icattlecoder/tgw"
 	"labix.org/v2/mgo"
 	"labix.org/v2/mgo/bson"
@@ -50,7 +50,9 @@ func NewUserMgr(coll *mgo.Collection, mcHosts []string) *UserMgr {
 
 func (u *UserMgr) InOut(user UserInfo, book_id string, typ string) (err error) {
 	n, err := u.coll.Find(bson.M{"uid": user.Uid, typ: book_id}).Count()
-	if err != nil { return }
+	if err != nil {
+		return
+	}
 	if n > 0 {
 		err = errors.New("Invalid op")
 		return
@@ -59,9 +61,9 @@ func (u *UserMgr) InOut(user UserInfo, book_id string, typ string) (err error) {
 }
 
 func (u *UserMgr) GetInOut(uids []int64) (result []interface{}, err error) {
-	result = make([]interface{},len(uids))
-	selector := bson.M{"avatar":1,"uid":1,"location":1,"name":1}
-	err = u.coll.Find(bson.M{"uid":bson.M{"$in":uids}}).Select(selector).All(&result)
+	result = make([]interface{}, len(uids))
+	selector := bson.M{"avatar": 1, "uid": 1, "location": 1, "name": 1}
+	err = u.coll.Find(bson.M{"uid": bson.M{"$in": uids}}).Select(selector).All(&result)
 	return
 }
 
@@ -81,34 +83,43 @@ func (u *UserMgr) GetInOut(uids []int64) (result []interface{}, err error) {
 		"large_avatar":"http:\/\/img3.douban.com\/icon\/user_large.jpg"
 	}
 */
-func (u *UserMgr) AddDouBan(data map[string]string) (user UserInfo, err error) {
+func (u *UserMgr) AddDouBan(data map[string]interface{}) (user UserInfo, err error) {
 
 	if uid, ok := data["uid"]; ok {
-		iuid, err2 := strconv.Atoi(uid)
-		if err2 != nil {
-			err = err2
-			return
-		}
-		user.Uid = int64(iuid)
+		if iv, ok := uid.(string); ok {
+			iuid, err2 := strconv.Atoi(iv)
+			if err2 != nil {
+				err = err2
+				return
+			}
+			user.Uid = int64(iuid)
 
-		if err = u.Users.Get(getUidStr(user.Uid), &user); err == nil {
-			err = errors.New("User Exsit")
-			return
+			if err = u.Users.Get(getUidStr(user.Uid), &user); err == nil {
+				err = errors.New("User Exsit")
+				return
+			}
+
 		}
 	} else {
 		err = errors.New("Invalid DouBan Users")
 	}
 
 	if name, ok := data["name"]; ok {
-		user.Name = name
+		if iv, ok := name.(string); ok {
+			user.Name = iv
+		}
 	}
 
 	if avatar, ok := data["avatar"]; ok {
-		user.Avatar = avatar
+		if iv, ok := avatar.(string); ok {
+			user.Avatar = iv
+		}
 	}
 
 	if loc_name, ok := data["loc_name"]; ok {
-		user.Location = loc_name
+		if iv, ok := loc_name.(string); ok {
+			user.Location = iv
+		}
 	}
 	err = u.Add(user)
 	return

@@ -102,7 +102,6 @@ var TAG = ((.currentTag));
                         <span>价格: {{book.Price}}
                     </li>
                     <li>
-
                         <button class="btn btn-sm btn-primary" href="/io?b={{book.Id}}" ng-click="in(book.Id,this)">想借({{book.In.length}})</button>
                         <button class="btn btn-sm btn-success" href="/io?b={{book.Id}}" ng-click="out(book.Id,this)">愿借出({{book.Out.length}})</button>
                         <a class="btn btn-sm btn-success" href="/io?b={{book.Id}}">.</a>
