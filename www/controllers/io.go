@@ -88,30 +88,15 @@ func (s *Server) Io(args InArgs, user *models.UserInfo) (data map[string]interfa
 	if err != nil {
 		return
 	}
-	/*
-	InUsers := []models.UserInfo{}
-	for _, v := range book.In {
-
-		InUsers = append(InUsers, s.UserMgr.Users[v])
-	}
-
-	OutUsers := []models.UserInfo{}
-	for _, v := range book.Out {
-		OutUsers = append(OutUsers, s.UserMgr.Users[v])
-	}
-	*/
-
 	data["book"] = book
-	if len(book.In)>0 {
-		if result,err := s.UserMgr.GetInOut(book.In);err == nil {
+	if len(book.In) > 0 {
+		if result, err := s.UserMgr.GetInOut(book.In); err == nil {
 			data["inUsers"] = result
-			log.Println(result)
 		}
 	}
 	if len(book.Out) > 0 {
-		if result,err := s.UserMgr.GetInOut(book.Out);err == nil {
+		if result, err := s.UserMgr.GetInOut(book.Out); err == nil {
 			data["outUsers"] = result
-			log.Println(result)
 		}
 	}
 

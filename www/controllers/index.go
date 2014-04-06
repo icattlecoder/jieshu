@@ -1,10 +1,10 @@
 package controllers
 
 import (
-	"log"
 	"github.com/icattlecoder/jieshu/www/models"
 	"labix.org/v2/mgo"
 	"labix.org/v2/mgo/bson"
+	"log"
 	// "log"
 )
 
@@ -120,7 +120,6 @@ func (s *Server) Search(args SearchArgs) (data map[string]interface{}, err error
 	books := make([]models.Book, 50)
 	err = query.Skip(args.Start * 50).Limit(50).All(&books)
 	sbooks := models.ConvertToSBook(books)
-	log.Println(sbooks)
 
 	if err != nil {
 		return
