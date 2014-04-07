@@ -4,6 +4,7 @@ import (
 	"github.com/icattlecoder/jieshu/www/models"
 	"labix.org/v2/mgo"
 	"labix.org/v2/mgo/bson"
+	"log"
 )
 
 // =============================================
@@ -19,6 +20,8 @@ func (s *Server) Index(args IndexArgs, user *models.UserInfo) (data map[string]i
 		data["user"] = user
 	}
 	data["catalog"] = s.data["catalog"]
+	data["contributers"], _ = s.UserMgr.GetOutTopN(20)
+	log.Println(data["contributers"])
 	return
 }
 

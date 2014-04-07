@@ -158,10 +158,8 @@ a.share_douban:hover {
 .more-meta {
     /*display: none;*/
 }
-.list-col5 {
-    list-style: none;
-    font-size: 200px;
-    margin: 0 -15px 0 0;
+.list-col {
+    padding-left: 0px;
 }
 .list-col li {
     float: left;

@@ -25,15 +25,15 @@ func (s *Server) DoubanLogin(env tgw.ReqEnv) (data map[string]interface{}, err e
 
 // Get /mock/login
 func (s *Server) MockLogin(env tgw.ReqEnv) {
-	/*
-		user,err := s.UserMgr.Get(84779859)
-		if err !=nil{
-			return
-		}
-		if err = env.Session.Set("userInfo", user);err == nil{
-			env.RW.Write([]byte("模拟登录成功"))
-		}
-	*/
+
+	user, err := s.UserMgr.Get(84779859)
+	if err != nil {
+		return
+	}
+	if err = env.Session.Set("userInfo", user); err == nil {
+		env.RW.Write([]byte("模拟登录成功"))
+	}
+
 }
 
 type UserCompleteArgs struct {

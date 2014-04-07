@@ -23,6 +23,8 @@ type UserInfo struct {
 	Name     string
 	In       []string
 	Out      []string
+	Incnt    int
+	Outcnt   int
 	Location string
 	Avatar   string
 }
@@ -57,7 +59,13 @@ func (u *UserMgr) InOut(user UserInfo, book_id string, typ string) (err error) {
 		err = errors.New("Invalid op")
 		return
 	}
-	return u.coll.Update(bson.M{"email": user.Email}, bson.M{"$push": bson.M{typ: book_id}})
+	user2, err := u.Get(user.Uid)
+	cnt := 0
+	if err == nil {
+		cnt = len(user2.Out) + 1
+	}
+	u.Users.Delete(getUidStr(user.Uid))
+	return u.coll.Update(bson.M{"email": user.Email}, bson.M{"$push": bson.M{typ: book_id}, "$set": bson.M{typ + "cnt": cnt}})
 }
 
 func (u *UserMgr) GetInOut(uids []int64) (result []interface{}, err error) {
@@ -94,8 +102,8 @@ func (u *UserMgr) AddDouBan(data map[string]interface{}) (user UserInfo, err err
 			}
 			user.Uid = int64(iuid)
 
-			user2, err = u.Get(user.Uid)
-			if err == nil {
+			user2, err2 := u.Get(user.Uid)
+			if err2 == nil {
 				user = user2
 				err = errors.New("User Exsit")
 				return
@@ -174,6 +182,12 @@ func (u *UserMgr) Get(uid int64) (user UserInfo, err error) {
 		query := u.coll.Find(bson.M{"uid": uid})
 		err = query.One(&user)
 	}
+	return
+}
+
+func (u *UserMgr) GetOutTopN(n int) (user []UserInfo, err error) {
+	user = make([]UserInfo, n)
+	err = u.coll.Find(nil).Sort("outcnt").Limit(n).All(&user)
 	return
 }
 

@@ -71,6 +71,26 @@
             <button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
             <strong>私人借书网刚刚上线，需要您的无私奉献!</strong>
         </div>
+        <p>
+        <h3>贡献榜</h3>
+        <hr/>
+            ((range .contributers))
+            <div class="right">
+                <p>
+                    <a href="/user?uid=((.Uid))">
+                        <img class="avatar" src="((.Avatar))">
+                    </a>
+                </p>
+                <p>
+                    ((.Name))<span>(</span>((.Outcnt))<span>)</span>
+                    <p>((.Location))</p>
+                </p>
+            </div>
+            ((end))
+        </p>
+        <div class="clearfix"></div>
+        <h3>所有书籍</h3>
+        <hr/>
         <ul class="list-col">
             <li ng-repeat="book in books" ng-cloak>
                 <div class="cover">
