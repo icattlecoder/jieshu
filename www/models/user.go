@@ -93,7 +93,7 @@ func (u *UserMgr) GetInOut(uids []int64) (result []interface{}, err error) {
 */
 func (u *UserMgr) AddDouBan(data map[string]interface{}) (user UserInfo, err error) {
 
-	if uid, ok := data["uid"]; ok {
+	if uid, ok := data["id"]; ok {
 		if iv, ok := uid.(string); ok {
 			iuid, err2 := strconv.Atoi(iv)
 			if err2 != nil {
