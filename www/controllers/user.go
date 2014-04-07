@@ -87,6 +87,7 @@ func (s *Server) DoubanCallback(args DoubanCallbackArgs, env tgw.ReqEnv) {
 			http.Redirect(env.RW, env.Req, "http://"+env.Req.Host+"/usercomplete", 302)
 			return
 		}
+		http.Redirect(env.RW, env.Req, "http://"+env.Req.Host+"/index", 302)
 	} else {
 		log.Println("DoubanCallback err", err)
 	}

@@ -94,7 +94,9 @@ func (u *UserMgr) AddDouBan(data map[string]interface{}) (user UserInfo, err err
 			}
 			user.Uid = int64(iuid)
 
-			if err = u.Users.Get(getUidStr(user.Uid), &user); err == nil {
+			user2, err = u.Get(user.Uid)
+			if err == nil {
+				user = user2
 				err = errors.New("User Exsit")
 				return
 			}
@@ -102,6 +104,7 @@ func (u *UserMgr) AddDouBan(data map[string]interface{}) (user UserInfo, err err
 		}
 	} else {
 		err = errors.New("Invalid DouBan Users")
+		return
 	}
 
 	if name, ok := data["name"]; ok {
