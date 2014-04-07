@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
-    <title>私人借书网|((.currentCtg))-((.currentTag))</title>
+    <title>((.currentCtg))-((.currentTag))|私人借书网</title>
     <meta name="keywords" content="私人借书，读书交流，读书交友" />
     <link rel="stylesheet" href="/static/css/bootstrap.min.css" />
     <link rel="stylesheet" href="/static/css/main.css" />
@@ -41,7 +41,7 @@ var TAG = ((.currentTag));
                     </li>
                     ((end))
                     <li class="navbar-form">
-                        <input type="text" class="form-control" placeholder="Search" ng-model="keyword" ng-keypress="search($event)">
+                        <input type="text" class="form-control search" placeholder="输入书名，在((print $cata))中搜索" ng-model="keyword" ng-keypress="search($event)">
                     </li>
             </ul>
             <ul class="nav navbar-nav navbar-right navbar-form">
@@ -52,7 +52,7 @@ var TAG = ((.currentTag));
                         <span class="caret"></span>
                     </button>
                     <ul class="dropdown-menu">
-                        <li><a href="#">((.user.Name))</a>
+                        <li><a href="/user?uid=((.user.Uid))">((.user.Name))</a>
                         </li>
                         <li><a href="/logout">退出</a>
                         </li>
@@ -61,7 +61,7 @@ var TAG = ((.currentTag));
                 ((else))
                 <div class="form-group">
                     <a href="/douban/login">
-                        <img class="avatar" src="http://img3.douban.com/pics/douban-icons/login_with_douban_32.png" alt="32图标" title="32图标">
+                        <img class="dblogin" src="http://img3.douban.com/pics/douban-icons/login_with_douban_32.png" alt="32图标" title="32图标">
                     </a>
                 </div>
                 ((end))
@@ -76,39 +76,39 @@ var TAG = ((.currentTag));
         </li>
         ((end)) ((end))
     </ol>
-
-    <div class="col-md-3 bookItem" ng-repeat="book in books" ng-cloak>
-        <div class="row">
-            <div class="col-md-4">
-                <a target="_blank" href="io?b={{book.Id}}">
-                    <img src="{{book.Image}}">
-                </a>
-            </div>
-            <div class="col-md-8">
-                <ul class="b_ul">
-                    <li>
-                        {{book.Title}}
-                    </li>
-                    <li ng-if="book.Author.length!=0">
-                        <span>作者: {{book.Author}}
-                    </li>
-                    <li ng-if="book.Translator.length!=0">
-                        <span>译者: {{book.Translator}}
-                    </li>
-                    <li>
-                        <span>出版社: {{book.Publisher}}
-                    </li>
-                    <li>
-                        <span>价格: {{book.Price}}
-                    </li>
-                    <li>
-                        <button class="btn btn-sm btn-primary" href="/io?b={{book.Id}}" ng-click="in(book.Id,this)">想借({{book.In.length}})</button>
-                        <button class="btn btn-sm btn-success" href="/io?b={{book.Id}}" ng-click="out(book.Id,this)">愿借出({{book.Out.length}})</button>
-                        <a class="btn btn-sm btn-success" href="/io?b={{book.Id}}">.</a>
-                    </li>
-                </ul>
-            </div>
-        </div>
+    <div class="bcontent">
+        <ul class="list-col">
+            <li ng-repeat="book in books" ng-cloak>
+                <div class="cover">
+                    <a href="/io?b={{book.Id}}" target="_blank" title="{{book.Title}}">
+                        <img src="{{book.Image}}" alt="{{book.Title}}" width="106px" height="158px">
+                    </a>
+                </div>
+                <div class="action">
+                    <button class="btn btn-sm btn-primary" href="/io?b={{book.Id}}" ng-click="in(book.Id,this)">想借({{book.In}})</button>
+                    <button class="btn btn-sm btn-success" href="/io?b={{book.Id}}" ng-click="out(book.Id,this)">愿借出({{book.Out}})</button>
+                </div>
+                <div class="info">
+                    <div class="title">
+                        {{book.title}}
+                    </div>
+                    <div class="more-meta">
+                        <p>
+                            <span class="author">
+                                {{book.Author}}
+                            </span>/
+                            <span class="publisher">
+                                {{book.Publisher}}
+                            </span>/
+                            <span class="price">
+                                {{book.Price}}
+                            </span>
+                        </p>
+                    </div>
+                </div>
+            </li>
+        </ul>
+        <div class="clearfix"></div>
     </div>
     <div class="clearfix"></div>
     <div class="row center">

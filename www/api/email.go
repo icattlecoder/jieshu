@@ -10,7 +10,7 @@ var (
 )
 
 func SendEmail(sub, body, to string) {
-	http.PostForm(EmailServerHost,
+	http.PostForm(EmailServerHost+"/send",
 		url.Values{
 			"sub":  {sub},
 			"body": {body},

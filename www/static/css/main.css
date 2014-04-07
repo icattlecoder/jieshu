@@ -47,6 +47,11 @@ body {
 .b_ul {
     list-style: none;
 }
+.b_ul li {
+    width: 150px;
+    overflow: hidden;
+    height: 22px;
+}
 #content {
     width: 980px;
     margin: 0px auto;
@@ -84,6 +89,10 @@ footer {
 .avatar {
     border-radius: 32px;
     -webkit-border-radius:32px;
+}
+.dblogin{
+    border-radius: 4px;
+    -webkit-border-radius:4px;
 }
 .shareSites {
     display: inline-block;
@@ -139,7 +148,37 @@ a.share_douban:hover {
 #bookin {
     padding: 10px;
 }
-
 #bookout {
     padding: 10px;
+}
+.ibook {
+    /*width: 350px;*/
+    float: left;
+}
+.more-meta {
+    /*display: none;*/
+}
+.list-col5 {
+    list-style: none;
+    font-size: 200px;
+    margin: 0 -15px 0 0;
+}
+.list-col li {
+    float: left;
+    margin:20px 10px;
+    list-style: none;
+    text-align: center;
+}
+.info {
+    display: none;
+}
+.action {
+    padding: 10px;
+}
+.bcontent{
+    width: 1090px;
+    margin: 0 auto;
+}
+.search{
+    width: 300px;
 }
