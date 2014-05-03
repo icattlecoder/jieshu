@@ -1,7 +1,7 @@
 私人借书网站源码
 =====================
 
-online: [私人借书网](http://4jieshu.com)
+online: [私人借书网](http://www.4jieshu.com)
 
 私人借书网由开源go web开发框架[tgw](http://github.com/icattlecoder/tgw)开发，数据库采用MongoDB，数据从豆瓣阅读采集，同时采用豆瓣帐号登录。
 
